@@ -1,0 +1,60 @@
+<template>
+  <div
+    class="chart-item"
+    v-for="item in groupData.groupList"
+    :key="item.id"
+    :style="{
+      ...getComponentAttrStyle(item.attr, groupIndex),
+      ...getCssStyle(item.styles),
+      ...getStatusStyle(item.status),
+      ...getPreviewConfigStyle(item.preview),
+    }"
+  >
+    <component
+      :is="item.chartConfig.chartKey"
+      :id="item.id"
+      :chartConfig="item"
+      :themeSetting="themeSetting"
+      :themeColor="themeColor"
+      :style="{ ...getSizeStyle(item.attr) }"
+    />
+  </div>
+</template>
+
+<script setup lang="ts">
+import { PropType } from 'vue';
+
+import { CreateComponentGroupType } from '@/packages/index.d';
+import {
+  getSizeStyle,
+  getComponentAttrStyle,
+  getCssStyle,
+  getStatusStyle,
+  getPreviewConfigStyle,
+} from '../utils/style';
+
+defineProps({
+  groupData: {
+    type: Object as PropType<CreateComponentGroupType>,
+    required: true,
+  },
+  themeSetting: {
+    type: Object,
+    required: true,
+  },
+  themeColor: {
+    type: Object,
+    required: true,
+  },
+  groupIndex: {
+    type: Number,
+    required: true,
+  },
+});
+</script>
+
+<style lang="scss" scoped>
+.chart-item {
+  position: absolute;
+}
+</style>

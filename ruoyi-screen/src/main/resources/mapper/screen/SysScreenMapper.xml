@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.screen.mapper.SysScreenMapper">
+    
+    <resultMap type="SysScreen" id="SysScreenResult">
+        <result property="screenId"    column="screen_id"    />
+        <result property="screenName"    column="screen_name"    />
+        <result property="screenTitle"    column="screen_title"    />
+        <result property="pageUrl"    column="page_url"    />
+        <result property="pageData"    column="page_data"    />
+        <result property="screenSort"    column="screen_sort"    />
+        <result property="status"    column="status"    />
+        <result property="isrelease"    column="isRelease"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="remark"    column="remark"    />
+    </resultMap>
+
+    <sql id="selectSysScreenVo">
+        select screen_id, screen_name, screen_title, page_data,page_url, screen_sort, status, isRelease, create_by, create_time, update_by, update_time, remark from sys_screen
+    </sql>
+
+    <select id="selectScreenList" parameterType="SysScreen" resultMap="SysScreenResult">
+        <include refid="selectSysScreenVo"/>
+        <where>  
+            <if test="screenName != null  and screenName != ''"> and screen_name like concat('%', #{screenName}, '%')</if>
+            <if test="screenTitle != null  and screenTitle != ''"> and screen_title = #{screenTitle}</if>
+            <if test="pageUrl != null  and pageUrl != ''"> and page_url = #{pageUrl}</if>
+            <if test="pageData != null  and pageData != ''"> and page_data = #{pageData}</if>
+            <if test="screenSort != null "> and screen_sort = #{screenSort}</if>
+            and status = 0
+            <if test="isrelease != null  and isrelease != ''"> and isRelease = #{isrelease}</if>
+            <if test="createBy != null  and createBy != ''"> and create_by in (select user_id FROM sys_user WHERE user_id = #{createBy}) </if>
+            <if test="params.beginCreateTime != null and params.beginCreateTime != '' and params.endCreateTime != null and params.endCreateTime != ''"> and create_time between #{params.beginCreateTime} and #{params.endCreateTime}</if>
+            <if test="updateBy != null  and updateBy != ''"> and update_by = #{updateBy}</if>
+            <if test="params.beginUpdateTime != null and params.beginUpdateTime != '' and params.endUpdateTime != null and params.endUpdateTime != ''"> and update_time between #{params.beginUpdateTime} and #{params.endUpdateTime}</if>
+        </where>
+        ${params.dataScope}
+    </select>
+    
+    <select id="selectScreenByScreenId" parameterType="Long" resultMap="SysScreenResult">
+        <include refid="selectSysScreenVo"/>
+        where screen_id = #{screenId}
+    </select>
+        
+    <insert id="insertScreen" parameterType="SysScreen" useGeneratedKeys="true" keyProperty="screenId">
+        insert into sys_screen
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="screenName != null and screenName != ''">screen_name,</if>
+            <if test="screenTitle != null and screenTitle != ''">screen_title,</if>
+            <if test="pageData != null and pageData != ''">page_data,</if>
+            <if test="pageUrl != null and pageUrl != ''">page_url,</if>
+            <if test="screenSort != null">screen_sort,</if>
+            <if test="status != null and status != ''">status,</if>
+            <if test="isrelease != null and isrelease != ''">isRelease,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="remark != null">remark,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="screenName != null and screenName != ''">#{screenName},</if>
+            <if test="screenTitle != null and screenTitle != ''">#{screenTitle},</if>
+            <if test="pageData != null and pageData != ''">#{pageData},</if>
+            <if test="pageUrl != null and pageUrl != ''">#{pageUrl},</if>
+            <if test="screenSort != null">#{screenSort},</if>
+            <if test="status != null and status != ''">#{status},</if>
+            <if test="isrelease != null and isrelease != ''">#{isrelease},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="remark != null">#{remark},</if>
+         </trim>
+    </insert>
+
+    <update id="updateScreen" parameterType="SysScreen">
+        update sys_screen
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="screenName != null and screenName != ''">screen_name = #{screenName},</if>
+            <if test="screenTitle != null and screenTitle != ''">screen_title = #{screenTitle},</if>
+            <if test="pageData != null and pageData != ''">page_data = #{pageData},</if>
+            <if test="pageUrl != null and pageUrl != ''">page_url = #{pageUrl},</if>
+            <if test="screenSort != null">screen_sort = #{screenSort},</if>
+            <if test="status != null and status != ''">status = #{status},</if>
+            <if test="isrelease != null and isrelease != ''">isRelease = #{isrelease},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="remark != null">remark = #{remark},</if>
+        </trim>
+        where screen_id = #{screenId}
+    </update>
+    <update id="deleteScreenByScreenIds" parameterType="String">
+        update sys_screen set   status = 1 where screen_id in
+        <foreach item="screenId" collection="screenIds" open="(" separator="," close=")">
+            #{screenId}
+        </foreach>
+        and create_by = #{userId}
+    </update>
+</mapper>
